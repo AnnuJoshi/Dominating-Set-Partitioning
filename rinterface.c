@@ -6781,7 +6781,7 @@ SEXP R_igraph_trussness(SEXP graph) {
   igraph_trussness(&g, &res);
   
   PROTECT(result=NEW_LIST(igraph_vector_ptr_size(&res)));
-  Rprintf("size %ld\n",igraph_vcount(VECTOR(res)[1]));
+ // Rprintf("size %ld\n",igraph_vcount(VECTOR(res)[1]));
   // Rprintf("size of res %ld",igraph_vector_ptr_size(&res));
   for (i=0; i<igraph_vector_ptr_size(&res); i++) {
   // Rprintf("size %ld\n",igraph_ecount(VECTOR(res)[i])); 
