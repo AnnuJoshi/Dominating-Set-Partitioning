@@ -6616,6 +6616,42 @@ SEXP R_igraph_neighborhood_graphs(SEXP graph, SEXP pvids, SEXP porder,
   return result;
 }
 
+/*SEXP R_igraph_dominant(SEXP graph) {
+  igraph_t g;
+  
+  igraph_vector_ptr_t res;
+  long int i;
+  
+  SEXP result;
+  
+  PROTECT(R_igraph_attribute_protected=NEW_LIST(100));
+  R_igraph_attribute_protected_size=0;
+  IGRAPH_FINALLY(R_igraph_attribute_protected_destroy, 0);
+
+  R_SEXP_to_igraph(graph, &g);
+  igraph_vector_ptr_init(&res, 0);
+  igraph_dominant(&g, &res);
+
+  PROTECT(result=NEW_LIST(igraph_vector_ptr_size(&res)));
+
+  for (i=0; i<igraph_vector_ptr_size(&res); i++) {
+    igraph_t *g=VECTOR(res)[i];
+    SET_VECTOR_ELT(result, i, R_igraph_to_SEXP(g));
+    igraph_destroy(g);
+    igraph_free(g);
+  }
+
+  igraph_vector_ptr_destroy(&res);
+  
+  
+  UNPROTECT(2);			
+  IGRAPH_FINALLY_CLEAN(1);
+  R_igraph_attribute_protected=0;
+  R_igraph_attribute_protected_size=0;
+
+  return result;
+}*/
+
 SEXP R_igraph_preference_game(SEXP pnodes, SEXP ptypes, SEXP ptype_dist,
 			      SEXP pfixed_sizes, SEXP pmatrix,
 			      SEXP pdirected, SEXP ploops) {
@@ -6772,7 +6808,7 @@ SEXP R_igraph_trussness(SEXP graph) {
   
   SEXP result;
   
-  PROTECT(R_igraph_attribute_protected=NEW_LIST(100));
+  PROTECT(R_igraph_attribute_protected=NEW_LIST(10000));
   R_igraph_attribute_protected_size=0;
   IGRAPH_FINALLY(R_igraph_attribute_protected_destroy, 0);
 
@@ -6781,7 +6817,7 @@ SEXP R_igraph_trussness(SEXP graph) {
   igraph_trussness(&g, &res);
   
   PROTECT(result=NEW_LIST(igraph_vector_ptr_size(&res)));
- // Rprintf("size %ld\n",igraph_vcount(VECTOR(res)[1]));
+  
   // Rprintf("size of res %ld",igraph_vector_ptr_size(&res));
   for (i=0; i<igraph_vector_ptr_size(&res); i++) {
   // Rprintf("size %ld\n",igraph_ecount(VECTOR(res)[i])); 
@@ -6803,6 +6839,24 @@ SEXP R_igraph_trussness(SEXP graph) {
   return result;
 }
 
+
+SEXP R_igraph_btrussness(SEXP graph) {
+  
+  igraph_t g;
+  igraph_vector_t res;
+  SEXP result;
+  
+  R_SEXP_to_igraph(graph, &g);
+  igraph_vector_init(&res, 0);
+  bottom_up_truss(&g, &res);
+  
+  PROTECT(result=NEW_NUMERIC(igraph_vector_size(&res)));
+  igraph_vector_copy_to(&res, REAL(result));
+  igraph_vector_destroy(&res);
+  
+  UNPROTECT(1);
+  return result;
+}
 
 SEXP R_igraph_cliques(SEXP graph, SEXP pminsize, SEXP pmaxsize) {
   
